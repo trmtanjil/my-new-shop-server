@@ -32,6 +32,13 @@ async function run() {
         const result = await productCllection.find().toArray();
         res.send(result)
     })
+    //get all data 
+    app.get('/products/:id',async(req, res)=>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await productCllection.findOne(query)
+        res.send(result)
+    })
 
     // server data add 
     app.post('/products',async(req,res)=>{
@@ -39,7 +46,19 @@ async function run() {
          const result = await productCllection.insertOne(newProduct);
          res.send(result)
         })
-        
+
+        //edit data 
+        app.put('/products/:id', async(req,res)=>{
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id)}
+            const options = { upsert: true };
+            const updatedData = req.body;
+            const updatedDoc ={
+                $set:updatedData
+            }
+            const result = await productCllection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
 
         // server data delet 
     app.delete('/products/:id',async(req, res)=>{
